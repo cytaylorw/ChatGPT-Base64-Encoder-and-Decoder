@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Base64 Encoder/Decoder</title>
+	<meta charset="UTF-8">
+	<style>
+		body {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			font-family: Arial, sans-serif;
+		}
+		table {
+			margin-top: 20px;
+			border-collapse: collapse;
+			width: 100%;
+			max-width: 600px;
+			text-align: center;
+		}
+		th, td {
+			padding: 10px;
+			border: 1px solid black;
+			font-size: 16px;
+		}
+		th {
+			background-color: #ddd;
+			font-weight: bold;
+		}
+		textarea {
+			width: 100%;
+			height: 100%;
+			box-sizing: border-box;
+			resize: none;
+			font-size: 16px;
+			padding: 10px;
+			border: 1px solid black;
+			background-color: white;
+			color: black;
+			font-family: inherit;
+			overflow: auto;
+		}
+		textarea:focus {
+			outline: none;
+		}
+		.btn {
+			background-color: #4CAF50;
+			color: white;
+			padding: 12px 24px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 16px;
+		}
+		.btn:hover {
+			background-color: #3e8e41;
+		}
+		.copied {
+			position: relative;
+			display: inline-block;
+			background-color: #4CAF50;
+			color: white;
+			padding: 8px;
+			border-radius: 4px;
+			top: -25px;
+			left: 5px;
+			font-size: 14px;
+			opacity: 0;
+			transition: opacity 0.3s;
+		}
+		.copied::after {
+			content: "Copied";
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+			font-size: 12px;
+			background-color: rgba(0,0,0,0.7);
+			color: white;
+			padding: 4px 8px;
+			border-radius: 4px;
+			opacity: 0;
+			transition: opacity 0.3s;
+			pointer-events: none;
+		}
+		.copied.show {
+			opacity: 1;
+		}
+		.copied.show::after {
+			opacity: 1;
+		}
+	</style>
+</head>
+<body>
+	<h1>Base64 Encoder/Decoder</h1>
+	<button id="add-row-btn" class="btn">Add Row</button>
+	<table>
+		<thead>
+			<tr>
+				<th>Option</th>
+				<th>Input</th>
+				<th>Output</th>
+			</tr>
+		</thead>
+		<tbody id="table-body">
+			<!-- The first row will be added after the page is loaded -->
+		</tbody>
+	</table>
+	<script>
+		// Create a new row with input and output textareas
+		function createRow() {
+			const row = document.createElement("tr");
+			const optionCell = document.createElement("td");
+			const select = document.createElement("select");
+			const encodeOption = document.createElement("option");
+		const decodeOption = document.createElement("option");
+		const inputCell = document.createElement("td");
+		const inputTextarea = document.createElement("textarea");
+		const outputCell = document.createElement("td");
+		const outputTextarea = document.createElement("textarea");
+
+		// Add options to select element
+		encodeOption.text = "Encode";
+		decodeOption.text = "Decode";
+		select.add(encodeOption);
+		select.add(decodeOption);
+
+		// Add elements to row and cells
+		optionCell.appendChild(select);
+		inputCell.appendChild(inputTextarea);
+		outputCell.appendChild(outputTextarea);
+		row.appendChild(optionCell);
+		row.appendChild(inputCell);
+		row.appendChild(outputCell);
+		document.getElementById("table-body").appendChild(row);
+
+		// Add event listener to input and output textareas
+		inputTextarea.addEventListener("input", updateOutput);
+		outputTextarea.addEventListener("focus", copyToClipboard);
+	}
+
+	// Update the output textarea with the encoded or decoded string
+	function updateOutput(event) {
+		const option = event.target.parentNode.previousElementSibling.firstChild.value;
+		const input = event.target.value;
+		let output = "";
+
+		if (option === "Encode") {
+			output = btoa(input);
+		} else {
+			output = atob(input);
+		}
+
+		event.target.parentNode.nextElementSibling.firstChild.value = output;
+	}
+
+	// Copy the output to clipboard and show a "Copied" message
+	function copyToClipboard(event) {
+		event.target.select();
+		document.execCommand("copy");
+
+		const copied = document.createElement("div");
+		copied.classList.add("copied");
+		copied.textContent = "Copied";
+		event.target.parentNode.appendChild(copied);
+
+		setTimeout(() => {
+			copied.classList.add("show");
+			setTimeout(() => {
+				copied.classList.remove("show");
+				setTimeout(() => {
+					event.target.parentNode.removeChild(copied);
+				}, 300);
+			}, 2000);
+		}, 0);
+	}
+
+	// Add event listener to "Add Row" button
+	document.getElementById("add-row-btn").addEventListener("click", createRow);
+
+	// Add the first row after the page is loaded
+	window.onload = () => {
+		createRow();
+	};
+</script>
+</body>
+</html>
